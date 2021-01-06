@@ -56,7 +56,7 @@ services:
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.web.address=:80"
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-############################## SSL Config  #######################
+############################## SSL  Config  #######################
      # - "--log.level=DEBUG"
      # - "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.$
       - "--certificatesresolvers.myresolver.acme.email=test@exemple.com"
@@ -75,3 +75,4 @@ services:
       
 volumes:
   db:
+  
