@@ -1,0 +1,123 @@
+version: '2'
+
+services:
+
+  apache:
+    image: bitnami/apache:2.4
+    environment:
+      - APACHE_HTTP_PORT_NUMBER=8080
+   #ports:
+    #  - 8081:8080
+    volumes:
+      - ./conf/apache-vhost.conf:/vhosts/myapp.conf:ro
+      - ./web:/app
+    depends_on:
+      - php
+      - db
+    labels:
+      - "traefik.enable=true"
+############################## Config du nom de domaine de la Cert. #######################      
+      - "traefik.http.routers.apache.rule=Host(`127.0.0.1`)"
+    ###########################################____________#######
+      - "traefik.http.routers.apache.entrypoints=websecure,web"
+      - "traefik.http.routers.apache.tls.certresolver=myresolver"
+      - "traefik.http.services.apache.loadbalancer.server.port=8080"
+  apache:
+    image: bitnami/apache:2.4
+    environment:
+      - APACHE_HTTP_PORT_NUMBER=8080
+   #ports:
+    #  - 80:80
+    volumes:
+      - ./conf/apache-vhost.conf:/vhosts/myapp.conf:ro
+      - ./web:/app
+    depends_on:
+      - php
+      - db
+    labels:
+      - "traefik.enable=true"
+############################## Config du nom de domaine de la Cert. #######################      
+      - "traefik.http.routers.apache.rule=Host(`127.0.0.1`)"
+    ###########################################____________#######
+      - "traefik.http.routers.apache.entrypoints=websecure,web"
+      - "traefik.http.routers.apache.tls.certresolver=myresolver"
+      - "traefik.http.services.apache.loadbalancer.server.port=8080"
+  apache:
+    image: bitnami/apache:2.4
+    environment:
+      - APACHE_HTTP_PORT_NUMBER=8080
+   #ports:
+    #  - 80:80
+    volumes:
+      - ./conf/apache-vhost.conf:/vhosts/myapp.conf:ro
+      - ./web:/app
+    depends_on:
+      - php
+      - db
+    labels:
+      - "traefik.enable=true"
+############################## Config du nom de domaine de la Cert. #######################      
+      - "traefik.http.routers.apache.rule=Host(`127.0.0.1`)"
+    ###########################################____________#######
+      - "traefik.http.routers.apache.entrypoints=websecure,web"
+      - "traefik.http.routers.apache.tls.certresolver=myresolver"
+      - "traefik.http.services.apache.loadbalancer.server.port=8080"
+
+
+  php:
+    image: trurlmcbyte/php-fpm:5.6.40
+#    ports:
+#      - 9000:9000
+    depends_on:
+      - db
+    volumes:
+      - ./web:/app
+
+
+  db:
+    image: mysql:5.7.32
+    restart: always
+    environment:
+      MYSQL_DATABASE: c1travelmuz
+      MYSQL_USER: c1travelmuz
+      MYSQL_PASSWORD: zzzzz
+      MYSQL_ROOT_PASSWORD: zzzzz
+    volumes:
+      - db:/var/lib/mysql
+      #- ~/travelmuz/db.sql:/db.sql
+
+
+
+  traefik:
+    image: "traefik:v2.3"
+    container_name: "traefik"
+    labels: 
+        - traefik.http.middlewares.https_redirect.redirectscheme.scheme=https
+        - traefik.http.middlewares.https_redirect.redirectscheme.permanent=true
+        - traefik.http.routers.http_catchall.rule=HostRegexp(`{any:.+}`)
+        - traefik.http.routers.http_catchall.entrypoints=http
+        - traefik.http.routers.http_catchall.middlewares=https_redirect
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.address=:80"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+############################## Config de la Cert. #######################
+     # - "--log.level=DEBUG"
+     # - "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.$
+      - "--certificatesresolvers.myresolver.acme.email=hatim@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "443:443"
+      - "8080:8080"
+      - "80:80"
+    volumes:
+      - "./ssl:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+      
+volumes:
+  db:
