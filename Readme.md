@@ -6,8 +6,14 @@
 - traefik 2.3
 
 ## how to use
+
+
 0/ clone the project in your server and make sure the DNS server is well configured.
+
 1/ put your web php application in the ./web directory.
+
 2/ change the ligne 20 in docker-compose.yml file with the coresponding domaine name.
+
 3/ run your application.
+
 - > docker-compose up -d
